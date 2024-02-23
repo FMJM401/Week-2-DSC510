@@ -1,0 +1,27 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('Europe Sales Records.csv')
+
+df.head()
+df.info()
+
+# histogram representing the categories of each item with ther count
+plt.figure(figsize=(15,5))
+plt.title('Distribution of Categories')
+sns.countplot(x='Item Type', data=df)
+plt.show()
+
+#histogram of all the unit prices
+plt.figure(figsize=(15,5))
+plt.title('Distribution of Prices')
+sns.histplot(x='Unit Price', data=df)
+plt.show()
+
+# histogram of revenue
+plt.figure(figsize=(15, 5))
+plt.title('Distribution of Revenue')
+sns.histplot(x='Total Revenue',data=df)
+plt.show()
