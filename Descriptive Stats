@@ -1,0 +1,211 @@
+#setting up
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import scipy.stats as stats
+
+#reading csv
+ds = pd.read_csv('Aemf1.csv')
+ds.head()
+#gives the information from the csv file
+ds.info()
+
+#Outlier Identification and Handling
+#boxplot representing the price of air bnb in Amsterdam
+plt.figure(figsize=(15,5))
+plt.title('City')
+sns.boxplot(ds['Price'])
+plt.show()
+
+#excluding outliers
+col_outlier = ['Price','City Center (km)', 'Metro Distance (km)', 
+               'Attraction Index', 'Normalised Attraction Index', 
+               'Restraunt Index', 'Normalised Restraunt Index'] 
+
+for col in col_outlier:
+    Q1 = ds[col].quantile(0.25)
+    Q3 = ds[col].quantile(0.75)
+
+    IQR = Q3 - Q1
+
+    limit_low = Q1 - IQR * 1.7
+    limit_high = Q3 + IQR * 1.7
+    
+    ds = ds[(ds[col] >= limit_low) & (ds[col] <= limit_high)]
+
+# z-score from Amsterdam 
+#define array of data for 100 entries for Amsterdam airbnb
+data1 = np.array([194.03,344.24,264.10,433.53,485.55,552.80,215.12,1771.30,
+                  1001.80,276.52,909.47,319.64,675.60,552.80,209.03,368.85,
+                  368.85,337.91,313.54,447.58,243.24,933.84,251.91,377.28,217,70,295.05,295.05,
+                  1032.97,270.42,524.68,599.67,516.01,602.25,504.06,319.64,614.44,467.04,983.29,
+                  298.78,196.61,430.24,319.64,405.65,334.16,491.88,319.64,780.35,355.02,1044.68,
+                  847.84,373.77,613.26,238.32,430.24,347.99,330.41,1179.66,259.18,277.92,467.04,
+                  583.74,374.94,372.36,479.22,454.85,206.45,497.73,399.55,761.84,317.06,319.40,
+                  209.03,209.03,640.45,209.03,934.08,210.20,221.20,441.26,441.26,325.49,792.77,
+                  213.95,1557.19,317.06,319.64,1044.68,310.96,295.03,344.24,3004.94])
+stats.zscore(data1)
+
+#IQR
+q3, q1=np.percentile(data1,[75,25])
+iqr = q3 - q1
+iqr
+
+#Price by City
+plt.figure(figsize = (10, 7))
+sns.histplot(data = ds, x = 'Price', hue = 'City', bins = 20, multiple = 'stack', kde = True)
+
+plt.title('Price by City')
+plt.xlabel('Price')
+plt.ylabel('Count')
+
+# Bias and Confounding Variables Identification
+Potential Sources of Bias:
+Outlier Bias - This is represented when there are values that lead to either skew the data set left of right. A way to fix this would be to remove the outliers and see which way the data set is skewed.
+The Room type, there is private rooms, and shared rooms. These would cause issues also because of booking.
+Metro Distance, City Center and Attraction index are also issues that would effect the data.
+
+# Handling Missing Data
+The way to handle missing data is to find the mean, meadian and mode. These help the user guess/fill in the missing gaps from the data thatis needed.
+
+# Analysis of Mean and Median Values
+import statistics
+from statistics import mean 
+from statistics import median
+
+data2 = [194.03,344.24,264.10,433.53,485.55,552.80,215.12,1771.30,
+                  1001.80,276.52,909.47,319.64,675.60,552.80,209.03,368.85,
+                  368.85,337.91,313.54,447.58,243.24,933.84,251.91,377.28,217,70,295.05,295.05,
+                  1032.97,270.42,524.68,599.67,516.01,602.25,504.06,319.64,614.44,467.04,983.29,
+                  298.78,196.61,430.24,319.64,405.65,334.16,491.88,319.64,780.35,355.02,1044.68,
+                  847.84,373.77,613.26,238.32,430.24,347.99,330.41,1179.66,259.18,277.92,467.04,
+                  583.74,374.94,372.36,479.22,454.85,206.45,497.73,399.55,761.84,317.06,319.40,
+                  209.03,209.03,640.45,209.03,934.08,210.20,221.20,441.26,441.26,325.49,792.77,
+                  213.95,1557.19,317.06,319.64,1044.68,310.96,295.03,344.24,3004.94]
+Amsterdam_mean= statistics.mean(data2)
+print("Amsterdam mean is: " , Amsterdam_mean)
+print ("Amsterdam median is %s" % (median(data2)))
+
+# Data Visualization
+#histogram representing the prict of the prices in each city 
+data1 = np.random.randn(100)
+sns.histplot(data1)
+#labels and title
+plt.xlabel("Prices")
+plt.ylabel("Capacity")
+plt.title('AirBNB Prices in City')
+#show data
+plt.show()
+
+import math
+# Measures of Central Tendency and Variablility 
+#data for Amsterdam for the first 100
+a = [194.03,344.24,264.10,433.53,485.55,552.80,215.12,1771.30,
+                  1001.80,276.52,909.47,319.64,675.60,552.80,209.03,368.85,
+                  368.85,337.91,313.54,447.58,243.24,933.84,251.91,377.28,217,70,295.05,295.05,
+                  1032.97,270.42,524.68,599.67,516.01,602.25,504.06,319.64,614.44,467.04,983.29,
+                  298.78,196.61,430.24,319.64,405.65,334.16,491.88,319.64,780.35,355.02,1044.68,
+                  847.84,373.77,613.26,238.32,430.24,347.99,330.41,1179.66,259.18,277.92,467.04,
+                  583.74,374.94,372.36,479.22,454.85,206.45,497.73,399.55,761.84,317.06,319.40,
+                  209.03,209.03,640.45,209.03,934.08,210.20,221.20,441.26,441.26,325.49,792.77,
+                  213.95,1557.19,317.06,319.64,1044.68,310.96,295.03,344.24,3004.94]
+#mean
+print("Mean is:",sum(a)/len(a))
+#median
+print("Median is:",statistics.median(a))
+print("Median low is:",statistics.median_low(a))
+print("Median high is:",statistics.median_high(a))
+#mode
+print("Mode is:",statistics.mode(a))
+print("Multimode is:",statistics.mode (a))
+#range
+print("The range is:",len(a))
+#variance
+print("Variance is:",statistics.variance(a))  
+#Standard deviation
+print("Standard Deviation is:",statistics.stdev(a))
+While finalizing the data and discovering the values. It appears that central tendency and variability are based of Amsterdam from the dataset and only th first 100.
+Mean: 503.38
+Median: 373.36, Low:372.36, High:373.77
+Mode:319.64
+
+# Data Cleaning
+#initial list
+list = [194.03,344.24,264.10,433.53,485.55,552.80,215.12,1771.30,
+                  1001.80,276.52,909.47,319.64,675.60,552.80,209.03,368.85,
+                  368.85,337.91,313.54,447.58,243.24,933.84,251.91,377.28,217,70,295.05,295.05,
+                  1032.97,270.42,524.68,599.67,516.01,602.25,504.06,319.64,614.44,467.04,983.29,
+                  298.78,196.61,430.24,319.64,405.65,334.16,491.88,319.64,780.35,355.02,1044.68,
+                  847.84,373.77,613.26,238.32,430.24,347.99,330.41,1179.66,259.18,277.92,467.04,
+                  583.74,374.94,372.36,479.22,454.85,206.45,497.73,399.55,761.84,317.06,319.40,
+                  209.03,209.03,640.45,209.03,934.08,210.20,221.20,441.26,441.26,325.49,792.77,
+                  213.95,1557.19,317.06,319.64,1044.68,310.96,295.03,344.24,3004.94]
+print("The orginal list is :" +str(list))
+#removing duplicates
+res =[]
+[res.append(x) for x in list if x not in res]
+# new list after removing duplicates
+print("The list after removing duplicates is :" +str(res))
+
+# Group Analysis
+cleanliness = pd.Categorical([10,8,9,9,10,8,10,10,9,10,10,10,
+                              8,10,8,10,10,10,10,9,10,10,10,
+                              10,10,8,10,10,10,9,10,9,9,9,10,
+                              9,10,9,10,10,9,10,9,10,10,10,10,
+                              10,10,10,9,9,10,10,9,9,10,9,9,
+                              10,9,10,10,10,9,10,10,6,10,10,
+                              10,10,9,10,6,10,10,10,9,10,10,
+                              9,8,10,10,10,9,10,10,9,9,10,
+                              8,10,10,9,10,10,10,0,0,7,9])
+print ("\n\ncleanliness : ", cleanliness)
+#central tendency values for cleanliness
+#mean
+print("Cleanliness Mean is:",sum(cleanliness)/len(cleanliness))
+#median
+print("Cleanliness Median is:",statistics.median(cleanliness))
+print("Cleanliness Median low is:",statistics.median_low(cleanliness))
+print("Cleanliness Median high is:",statistics.median_high(cleanliness))
+#box plot  for cleaniness 
+plt.title('Cleaniness ')
+sns.boxplot(cleanliness)
+#labels and title
+plt.xlabel("Rating")
+plt.ylabel("Cleaniness")
+plt.title('Cleaniness of Room in AirBnB')
+#display plot
+plt.show()
+
+# Guest Satisfaction
+Guest_Satisfaction = pd.Categorical([93,85,87,90,98,100,94,100,96,88,96,97,
+                                     87,100,96,98,90,97,96,93,96,96,97,
+                                     98,96,93,95,94,96,98,89,94,100,100,
+                                     94,96,94,94,94,94,96,95,96,94,96,91,
+                                     100,90,98,98,98,98,84,98,97,77,98,99,
+                                     98,97,96,99,88,97,96,98,95,95,97,
+                                     93,90,96,97,98,96,98,96,88,94,91,
+                                     80,97,93,98,99,95,98,94,92,82,95])
+print ("\n\nGuest_Satisfaction : ", Guest_Satisfaction)
+
+#central tendency values for guest satisfaction
+#mean
+print("Guest Satisfaction Mean is:",sum(Guest_Satisfaction)/len(Guest_Satisfaction))
+#median
+print("Guest Satisfaction Median is:",statistics.median(Guest_Satisfaction))
+print("Guest Satisfaction Median low is:",statistics.median_low(Guest_Satisfaction))
+print("Guest Satisfaction Median high is:",statistics.median_high(Guest_Satisfaction))
+
+#box plot  for Guest Satisfication 
+plt.title('Guest_Satisfaction ')
+sns.boxplot(Guest_Satisfaction)
+#labels and title
+plt.xlabel("Rating")
+plt.ylabel("Guest Satisfaction")
+plt.title('Guest Satisfaction AirBnB')
+#display plot
+plt.show()
+
+
+#References
+Rogel-Salazar, J. (2023). Statistics and data visualisation with python (1st ed.). CRC Press. ISBN-13: 9781003160359
+Khemani, D. (2023, March 25). Airbnb cleaned Europe dataset. Kaggle.https://www.kaggle.com/datasets/dipeshkhemani/airbnb-cleaned-europe-dataset?select=Aemf1.csv  
